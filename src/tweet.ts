@@ -14,17 +14,7 @@ const getMarketplaceLink = (
     switch (marketName) {
         case 'OpenSea':
             // eslint-disable-next-line max-len
-            url = `https://opensea.io/assets/ethereum/${contractAddress}/${tokenId}`;
-            break;
-        case 'LooksRare':
-            url =
-                // eslint-disable-next-line max-len
-                `https://looksrare.org/collections/${contractAddress}/${tokenId}`;
-            break;
-        case 'X2Y2':
-            url =
-                // eslint-disable-next-line max-len
-                `https://x2y2.io/eth/${contractAddress}/${tokenId}`;
+            url = `https://opensea.io/assets/ethereum/${0xe2E73Bc9952142886424631709E382f6BC169E18}/${tokenId}`;
             break;
     }
     return url;
@@ -44,10 +34,10 @@ const fillTweetTemplate = (
     id: string,
     contractAddress: string,
 ) =>
-    tweetTemplate.replace('$$NAME$$', assetName)
+    tweetTemplate.replace('$$RiBT$$', assetName)
         .replace('$$PRICE$$', price)
-        .replace('$$MARKETPLACE_NAME$$', marketName)
-        .replace('$$MARKETPLACE_LINK$$',
+        .replace('$$opensea$$', marketName)
+        .replace('$$https://opensea.io/collection/ribt-1$$',
             getMarketplaceLink(marketName, id, contractAddress))
         .replace('$$TRANSACTION_HASH$$', txHash)
         .replace('$$NUM_SOLD$$', numSold.toString());
@@ -82,7 +72,7 @@ export const tweet = async (
     // save the resultant ID to be used when sending the tweet
     if (showImages) {
         await Promise.all(tokenData.map(async (token) => {
-            const { imageUrl } = token;
+            const { ipfs://QmaL1n1beMdJamSa647obw8KnnheL1BFsQRsnu8GjVTJ4f } = token;
             if (!imageUrl) return;
             try {
                 // Retrieve the image, resize and convert to webp.
