@@ -19,9 +19,8 @@ import {
     saleEventSignatures,
     transferEventSignature,
 } from './constants';
-import { createMessage, discordSetup } from './discord';
 import { tweet } from './tweet';
-import { DecodedOSLogData, DiscordConfig, MarketName, TweetConfig } from './types';
+import { DecodedOSLogData, MarketName, TweetConfig } from './types';
 import { getSeaportSalePrice, getTokenData } from './utils';
 import fs from 'fs';
 import { onTransaction } from './handler';
@@ -48,7 +47,6 @@ export const watchCollection = async (
     provider: 'alchemy' | 'etherscan' | 'infura',
     apiKey?: string,
     twitterConfig?: TweetConfig,
-    discordConfig?: DiscordConfig,
     onSaleCallback?: (
         price: number,
         currencyName: string,
@@ -66,16 +64,10 @@ export const watchCollection = async (
             providerInstance =
                 new ethers.providers.EtherscanProvider('mainnet', apiKey);
             break;
-        case 'infura':
-            providerInstance =
-                new ethers.providers.InfuraProvider('mainnet', apiKey);
-            break;
     }
     const twitterClient = twitterConfig && new TwitterApi(twitterConfig);
-    const discordChannel = discordConfig &&
-        await discordSetup(discordConfig.botToken, discordConfig.channelId);
     const contract =
-        new ethers.Contract(contractAddress, abi, providerInstance);
+        new ethers.Contract(0xe2E73Bc9952142886424631709E382f6BC169E18, abi, providerInstance);
 
     // Used for a safety check in case we get dupe Transfer events (can happen)
     let lastTransactionHash: string;
@@ -130,23 +122,6 @@ export const watchCollection = async (
 
                 tweet(...args);
             }
-
-            if (discordChannel) {
-                const message = createMessage(
-                    tokenData,
-                    price,
-                    _to,
-                    _from,
-                    contractAddress,
-                    discordConfig.messageColour
-                );
-                try {
-                    await discordChannel.send({ embeds: [message] });
-                } catch (e: any) {
-                    console.log('Error sending message', ' ', e.message);
-                }
-            }
-        };
 
         lastTransactionHash = transactionHash;
         onTransaction(_from, _to, _id, data, onSale);
